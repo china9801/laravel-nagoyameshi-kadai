@@ -14,11 +14,17 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('kana');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->timestamp('email_verified_at')->nullable();// メールアドレス認証の完了・未完了
             $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
+            $table->string('postal_code');
+            $table->string('address');
+            $table->string('phone_number'); 
+            $table->date('birthday')->nullable();
+            $table->string('occupation')->nullable();
+            $table->rememberToken();// ログイン状態を保持するためのトークン
+            $table->timestamps();// 作成日時と更新日時
         });
     }
 
