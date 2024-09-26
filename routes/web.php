@@ -25,6 +25,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'auth:admin
     Route::get('home', [Admin\HomeController::class, 'index'])->name('home');
 });
 
-Route::get('/user', [UserController::class, 'index']);
+Route::get('admin/users/index', [Admin\UserController::class, 'index'])->middleware(['auth:admin', 'verified'])->name('admin.users.index');
 
-Route::get('/user', [UserController::class, 'show']);
+Route::get('admin/users/{user}', [Admin\UserController::class, 'show'])->middleware(['auth:admin', 'verified'])->name('admin.users.show');

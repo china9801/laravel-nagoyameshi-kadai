@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -27,13 +27,13 @@ class UserController extends Controller
         $total = $users->total();
 
         // ビューに変数を渡す
-        return view('users.index', compact('users', 'keyword', 'total'));
+        return view('admin.users.index', compact('users', 'keyword', 'total'));
     }
 
     // 会員詳細ページのアクション
     public function show(User $user)
     {
         // ビューにユーザー情報を渡す
-        return view('users.show', compact('user'));
+        return view('admin.users.show', compact('user'));
     }
 }
