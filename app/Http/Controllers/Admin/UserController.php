@@ -19,7 +19,7 @@ class UserController extends Controller
         if ($keyword) {
             $query->where(function ($query) use ($keyword) {
                 $query->where('name', 'like', "%{$keyword}%")
-                    ->orWhere('furigana', 'like', "%{$keyword}%");
+                    ->orWhere('kana', 'like', "%{$keyword}%");
             });
         }
 
