@@ -15,8 +15,7 @@ class UserTest extends TestCase
      */
 
      /** @test */
-    public function test_guest_cannot_access_user_index()
-    {
+    public function test_guest_cannot_access_user_index() {
         $response = $this->get(route('admin.users.index'));
         $response->assertRedirect(route('login'));
     }
