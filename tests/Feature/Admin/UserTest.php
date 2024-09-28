@@ -6,68 +6,63 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
+use App\Models\Admin;
+use Illuminate\Support\Facades\Hash;
 
 class UserTest extends TestCase
 {
     use RefreshDatabase;
-    /**
-     * A basic feature test example.
-     */
-
-     /** @test */
-    public function test_guest_cannot_access_user_index() {
+    
+    // 会員一覧ページのテストメソッド
+    public function test_unauthenticated_user_cannot_access_admin_users_index()
+    {
         $response = $this->get(route('admin.users.index'));
-        $response->assertRedirect(route('login'));
+        $response->assertRedirect(route('admin.login'));
     }
 
-    /** @test */
-    public function test_regular_user_cannot_access_user_index()
+    public function test_regular_user_cannot_access_admin_users_index()
     {
-        $user = User::factory()->create(['role' => 'user']); // 一般ユーザー作成
-        $this->actingAs($user);
-
-        $response = $this->get(route('admin.users.index'));
-        $response->assertStatus(403); // Forbidden
+        $regularUser = User::factory()->create();
+        $response = $this->actingAs($regularUser)->get(route('admin.users.index'));
+        $response->assertRedirect(route('admin.login'));
     }
 
-    /** @test */
-    public function test_admin_can_access_user_index()
+    public function test_admin_user_can_access_admin_users_index()
     {
-        $admin = User::factory()->create(['role' => 'admin']); // 管理者作成
-        $this->actingAs($admin);
-
-        $response = $this->get(route('admin.users.index'));
-        $response->assertStatus(200); // OK
+        $adminUser = new Admin();
+        $adminUser->email = 'adminuser@example.com';
+        $adminUser->password = Hash::make('password');
+        $adminUser->save();
+        $response = $this->actingAs($adminUser,'admin')->get(route('admin.users.index'));
+        $response->assertStatus(200);
     }
 
-    /** @test */
-    public function test_guest_cannot_access_user_show()
+    // 会員詳細ページのテストメソッド
+    public function test_unauthenticated_user_cannot_access_admin_users_show()
     {
-        $user = User::factory()->create(); // 任意のユーザー作成
-        $response = $this->get(route('admin.users.show', $user));
-        $response->assertRedirect(route('login'));
+        $regularUser = User::factory()->create();
+        $response = $this->get(route('admin.users.show', $regularUser));
+        $response->assertRedirect(route('admin.login'));
     }
 
-    /** @test */
-    public function test_regular_user_cannot_access_user_show()
+    public function test_regular_user_cannot_access_admin_users_show()
     {
-        $user = User::factory()->create(['role' => 'user']); // 一般ユーザー作成
-        $this->actingAs($user);
-
-        $targetUser = User::factory()->create(); // 表示するユーザー作成
-        $response = $this->get(route('admin.users.show', $targetUser));
-        $response->assertStatus(403); // Forbidden
+        $regularUser = User::factory()->create();
+        $response = $this->actingAs($regularUser)->get(route('admin.users.show', $regularUser));
+        $response->assertRedirect(route('admin.login'));
     }
 
-    /** @test */
-    public function test_admin_can_access_user_show()
+    public function test_admin_user_can_access_admin_users_show()
     {
-        $admin = User::factory()->create(['role' => 'admin']); // 管理者作成
-        $this->actingAs($admin);
+        $adminUser = new Admin();
+        $adminUser->email = 'adminuser@example.com';
+        $adminUser->password = Hash::make('password');
+        $adminUser->save();
 
-        $targetUser = User::factory()->create(); // 表示するユーザー作成
-        $response = $this->get(route('admin.users.show', $targetUser));
-        $response->assertStatus(200); // OK
+        $regularUser = User::factory()->create();
+
+        $response = $this->actingAs($adminUser,'admin')->get(route('admin.users.show', $regularUser));
+        $response->assertStatus(200);
     }
 
 }
