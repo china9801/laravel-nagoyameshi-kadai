@@ -31,6 +31,4 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'auth:admin
     Route::get('restaurants', [Admin\RestaurantController::class, 'index'])->name('restaurants.index');
 
 
-
-
 });
