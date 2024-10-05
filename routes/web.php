@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\RestaurantController;
+use App\Http\Controllers\HomeController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -31,4 +33,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'auth:admin
     Route::get('restaurants', [Admin\RestaurantController::class, 'index'])->name('restaurants.index');
 
 
+});
+
+Route::group(['middleware' => 'guest:admin'], function () {
+    // ここにルーティングを設定する
+    Route::get('/', [HomeController::class, 'index'])->name('home');
 });

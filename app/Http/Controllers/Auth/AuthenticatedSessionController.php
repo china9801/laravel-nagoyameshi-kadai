@@ -30,6 +30,11 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         return redirect()->intended(RouteServiceProvider::HOME);
+
+        // フラッシュメッセージをセッションに保存
+        $request->session()->flash('flash_message', 'ログインしました。');
+
+        return redirect()->intended('home'); // リダイレクト先を指定
     }
 
     /**
@@ -44,5 +49,13 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+
+        // フラッシュメッセージをセッションに保存
+        $request->session()->flash('flash_message', 'ログアウトしました。');
+
+        return redirect('/'); // トップページにリダイレクト
     }
+
+
+
 }
