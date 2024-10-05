@@ -56,7 +56,8 @@ class RestaurantController extends Controller
             'seating_capacity' => 'required|integer|min:0',
         ]);
 
-        $restaurant = new Restaurant($request->except('image'));
+        $restaurant = new Restaurant();
+        $restaurant->name = $request->input('name');
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('restaurants', 'public');
@@ -65,7 +66,16 @@ class RestaurantController extends Controller
             $restaurant->image = '';
         }
 
+        $restaurant->description = $request->input('description');
+        $restaurant->lowest_price = $request->input('lowest_price');
+        $restaurant->highest_price = $request->input('highest_price');
+        $restaurant->postal_code = $request->input('postal_code');
+        $restaurant->address = $request->input('address');
+        $restaurant->opening_time = $request->input('opening_time');
+        $restaurant->closing_time = $request->input('closing_time');
+        $restaurant->seating_capacity = $request->input('seating_capacity');
         $restaurant->save();
+
 
         return redirect()->route('admin.restaurants.index')->with('flash_message', '店舗を登録しました。');
     }
@@ -91,6 +101,8 @@ class RestaurantController extends Controller
             'closing_time' => 'required|after:opening_time',
             'seating_capacity' => 'required|integer|min:0',
         ]);
+
+        
 
         $restaurant->fill($request->except('image'));
 
