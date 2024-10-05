@@ -9,6 +9,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use App\Models\Restaurant;
+
 
 class RestaurantController extends Controller
 {
@@ -102,7 +104,7 @@ class RestaurantController extends Controller
             'seating_capacity' => 'required|integer|min:0',
         ]);
 
-        
+
 
         $restaurant->fill($request->except('image'));
 
