@@ -11,20 +11,16 @@ class UserController extends Controller
     // 会員一覧ページのアクション
     public function index(Request $request)
     {
+         //検索ボックスに入力されたキーワードを取得する
         $keyword = $request->input('keyword');
 
-        // 検索条件に基づいてユーザーを取得
-        $query = User::query();
-
+        // キーワードが存在すれば検索を行い、そうでなければ全件取得する
         if ($keyword) {
-            $query->where(function ($query) use ($keyword) {
-                $query->where('name', 'like', "%{$keyword}%")
-                    ->orWhere('kana', 'like', "%{$keyword}%");
-            });
+            $users = User::where('name', 'like', "%{$keyword}%")->orWhere('kana', 'like', "%{$keyword}%")->paginate(15);
+        } else {
+            $users = User::paginate(15);
         }
 
-        // ページネーションを適用
-        $users = $query->paginate(10);
         $total = $users->total();
 
         // ビューに変数を渡す

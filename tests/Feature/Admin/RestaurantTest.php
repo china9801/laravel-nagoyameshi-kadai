@@ -256,7 +256,7 @@ class RestaurantTest extends TestCase
 
         $response = $this->actingAs($admin, 'admin')->patch(route("admin.restaurants.update", $restaurant_old), $restaurant_new);
         $this->assertDatabaseHas('restaurants', $restaurant_new); // データベースに更新されていることを確認
-        $response->assertRedirect(route('admin.restaurants.index')); // 更新後のリダイレクト先を確認
+        $response->assertRedirect(route('admin.restaurants.show', $restaurant_old));  //更新後のリダイレクト先,ここをコントローラーと同じになるよう変更
     }
 
     // destroyアクションのテスト

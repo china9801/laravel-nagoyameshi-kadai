@@ -104,8 +104,6 @@ class RestaurantController extends Controller
             'seating_capacity' => 'required|integer|min:0',
         ]);
 
-
-
         $restaurant->fill($request->except('image'));
 
         if ($request->hasFile('image')) {
