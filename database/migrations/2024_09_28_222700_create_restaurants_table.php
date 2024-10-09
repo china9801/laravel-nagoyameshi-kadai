@@ -24,7 +24,6 @@ return new class extends Migration
             $table->time('closing_time');
             $table->unsignedInteger('seating_capacity');
             $table->timestamps();
-            
         });
     }
 
