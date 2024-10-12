@@ -18,12 +18,9 @@ use App\Http\Controllers\Admin\CategoryController;
 |
 */
 
-/*Route::get('/', function () {
-    return view('home');
+Route::get('/', function () {
+    return view('welcome');
 });
-*/
-
-Route::get('/', [HomeController::class, 'index'])->name('home');
 
 require __DIR__.'/auth.php';
 
