@@ -2,6 +2,10 @@
 
 namespace Tests\Feature\Admin;
 
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use App\Models\Admin;
+use App\Models\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -21,9 +25,9 @@ class CategoryTest extends TestCase
     // ログイン済みの一般ユーザーは管理者側のカテゴリ一覧ページにアクセスできない
     public function test_user_cannot_access_admin_categories_index()
     {
-        $category = Category::factory()->create();
+        $user = User::factory()->create();
 
-        $response = $this->actingAs($category)->get(route('admin.categories.index'));
+        $response = $this->actingAs($user)->get(route('admin.categories.index'));
 
         $response->assertRedirect(route('admin.login'));
     }
@@ -42,10 +46,12 @@ class CategoryTest extends TestCase
     }
 
 // storeアクションのテスト
-    // 未ログインのユーザーは管理者側のカテゴリ登録ページにアクセスできない
+    //未ログインのユーザーはカテゴリを登録できない
     public function test_guest_cannot_access_store_category()
     {
-        $response = $this->get(route('admin.category.store'));
+        $user = User::factory()->create();
+        $category_data = ['name' => 'test',];
+        $response = $this->actingAs($user)->post(route('admin.categories.store'),$category_data);//データ登録するときはpost　更新する時はpatch
         $response->assertRedirect(route('admin.login')); // 未ログインのユーザーがアクセスできないことを確認
     }
 
@@ -75,8 +81,8 @@ class CategoryTest extends TestCase
     //未ログインのユーザーはカテゴリを更新できない
     public function test_guest_cannot_update_category()
     {
-        $restaurant_old = Restaurant::factory()->create();
-        $categoey_new = [
+        $category_old = Category::factory()->create();
+        $category_new = [
             'name' => '更新テスト',
         ]; 
         $response = $this->patch(route("admin.categories.update", $category_old), $category_new);
@@ -114,7 +120,7 @@ class CategoryTest extends TestCase
 
         $response = $this->actingAs($admin, 'admin')->patch(route("admin.categories.update", $category_old), $category_new);
         $this->assertDatabaseHas('categories', $category_new); // データベースに更新されていることを確認
-        $response->assertRedirect(route('admin.categories.index', $category_old));  //更新後のリダイレクト先,ここをコントローラーと同じになるよう変更
+        $response->assertRedirect(route('admin.categories.index'));  //更新後のリダイレクト先,ここをコントローラーと同じになるよう変更
     }
 
 
