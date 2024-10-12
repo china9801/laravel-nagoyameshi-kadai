@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\RestaurantController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Admin\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,9 +32,13 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'auth:admin
     
     Route::resource('restaurants', Admin\RestaurantController::class);
 
+    Route::resource('categories', Admin\CategoryController::class);
+
 });
 
 Route::group(['middleware' => 'guest:admin'], function () {
     // ここにルーティングを設定する
     Route::get('/', [HomeController::class, 'index'])->name('home');
 });
+
+
