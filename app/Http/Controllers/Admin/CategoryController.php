@@ -34,7 +34,7 @@ class CategoryController extends Controller
 
         $category = new Category(); //モデルのカテゴリのクラスをインスタンス
         $category->name = $request->input('name');//左のnameはカラム名 右のinputの中のnameはveiwのformのnameの値
-        $categories->save();
+        $category->save();
 
         return redirect()->route('admin.categories.index')->with('flash_message', 'カテゴリを登録しました。');
     }
