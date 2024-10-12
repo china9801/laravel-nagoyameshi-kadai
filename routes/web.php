@@ -35,9 +35,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'auth:admin
 
 });
 
-Route::group(['middleware' => 'guest:admin'], function () {
+// Route::group(['middleware' => 'guest:admin'], function () {
     // ここにルーティングを設定する
-    Route::get('/', [HomeController::class, 'index'])->name('home');
-});
+    // Route::get('/', [HomeController::class, 'index'])->name('home');
+// });
 
 
