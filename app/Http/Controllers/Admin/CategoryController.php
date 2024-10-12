@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Category;
 
 class CategoryController extends Controller
 {
@@ -31,7 +32,7 @@ class CategoryController extends Controller
             'name' => 'required',
         ]);
 
-        $categories->save();
+        //$categories->save();
 
         return redirect()->route('admin.categories.index')->with('flash_message', 'カテゴリを登録しました。');
     }
@@ -43,7 +44,7 @@ class CategoryController extends Controller
             'name' => 'required',
         ]);
 
-        $categories->save();
+        //$categories->save();
 
         return redirect()->route('admin.categories.index')->with('flash_message', 'カテゴリを編集しました。');
     }
