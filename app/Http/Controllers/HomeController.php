@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Restaurant;
+<<<<<<< HEAD
+=======
+use App\Models\Category;
+
+>>>>>>> feature-admin-categories
 
 class HomeController extends Controller
 {
