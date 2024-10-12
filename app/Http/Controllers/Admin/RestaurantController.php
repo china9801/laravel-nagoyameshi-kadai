@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use App\Models\Restaurant;
+use App\Models\Category;
+
 
 
 class RestaurantController extends Controller
