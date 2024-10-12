@@ -7,9 +7,6 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-<<<<<<< HEAD
-    //
-=======
     // カテゴリ一覧ページ
     public function index(Request $request)
     {
@@ -59,8 +56,4 @@ class CategoryController extends Controller
         return redirect()->route('admin.categories.index')->with('flash_message', '店舗を削除しました。');
     }
 
-
-
-
->>>>>>> feature-admin-categories
 }
