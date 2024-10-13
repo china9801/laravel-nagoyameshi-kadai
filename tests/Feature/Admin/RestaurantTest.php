@@ -291,8 +291,9 @@ class RestaurantTest extends TestCase
         $user = User::factory()->create();
 
         $restaurant = Restaurant::factory()->create();
+
         $response = $this->actingAs($user)->delete(route("admin.restaurants.destroy", $restaurant));
-        this->assertDatabaseHas('restaurants', ['id' => $restaurant->id]);
+        $this->assertDatabaseHas('restaurants', ['id' => $restaurant->id]);
         $response->assertRedirect(route('admin.login')); // 一般ユーザーが削除できないことを確認
     }
 
@@ -305,7 +306,7 @@ class RestaurantTest extends TestCase
         $admin->save();
 
         $restaurant = Restaurant::factory()->create();
-        
+
         $response = $this->actingAs($admin, 'admin')->delete(route("admin.restaurants.destroy", $restaurant));
         //$this->assertDatabaseMissing('restaurants', $restaurant);
         $this->assertDatabaseMissing('restaurants', ['id' => $restaurant->id]);
