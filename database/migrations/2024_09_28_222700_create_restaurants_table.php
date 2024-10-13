@@ -16,13 +16,13 @@ return new class extends Migration
             $table->string('name');
             $table->string('image')->default('');
             $table->text('description');
-            $table->unsignedInteger('lowest_price');
-            $table->unsignedInteger('highest_price');
+            $table->integer('lowest_price')->unsigned();
+            $table->integer('highest_price')->unsigned();
             $table->string('postal_code');
             $table->string('address');
             $table->time('opening_time');
             $table->time('closing_time');
-            $table->unsignedInteger('seating_capacity');
+            $table->integer('seating_capacity')->unsigned();
             $table->timestamps();
         });
     }

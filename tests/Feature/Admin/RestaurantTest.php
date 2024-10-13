@@ -15,12 +15,13 @@ class RestaurantTest extends TestCase
     use RefreshDatabase;
 
     // indexアクションのテスト
+    // 未ログインのユーザーは管理者側の店舗一覧ページにアクセスできない
     public function test_guest_cannot_access_restaurant_index()
     {
         $response = $this->get(route('admin.restaurants.index'));
         $response->assertRedirect(route('admin.login')); // 未ログインのユーザーがアクセスできないことを確認
     }
-
+     // ログイン済みの一般ユーザーは管理者側の店舗一覧ページにアクセスできない
     public function test_logged_in_user_cannot_access_restaurant_index()
     {
         $user = User::factory()->create(); // 一般ユーザーを作成
@@ -28,7 +29,7 @@ class RestaurantTest extends TestCase
         $response = $this->actingAs($user)->get(route('admin.restaurants.index'));
         $response->assertRedirect(route('admin.login')); // 一般ユーザーがアクセスできないことを確認
     }
-
+    // ログイン済みの管理者は管理者側の店舗一覧ページにアクセスできる
     public function test_logged_in_admin_can_access_restaurant_index()
     {
         $admin = new Admin();
@@ -41,6 +42,7 @@ class RestaurantTest extends TestCase
     }
 
     // showアクションのテスト
+    // 未ログインのユーザーは管理者側の店舗詳細ページにアクセスできない
     public function test_guest_cannot_access_restaurant_show()
     {
         $restaurant = Restaurant::factory()->create(); // 店舗を作成
@@ -48,6 +50,7 @@ class RestaurantTest extends TestCase
         $response->assertRedirect(route('admin.login')); // 未ログインのユーザーがアクセスできないことを確認
     }
 
+    // ログイン済みの一般ユーザーは管理者側の店舗詳細ページにアクセスできない
     public function test_logged_in_user_cannot_access_restaurant_show()
     {
         $user = User::factory()->create();
@@ -57,6 +60,7 @@ class RestaurantTest extends TestCase
         $response->assertRedirect(route('admin.login')); // 一般ユーザーがアクセスできないことを確認
     }
 
+    // ログイン済みの管理者は管理者側の店舗詳細ページにアクセスできる
     public function test_logged_in_admin_can_access_restaurant_show()
     {
         $admin = new Admin();
@@ -70,12 +74,14 @@ class RestaurantTest extends TestCase
     }
 
     // createアクションのテスト
+    // 未ログインのユーザーは管理者側の店舗登録ページにアクセスできない
     public function test_guest_cannot_access_restaurant_create()
     {
         $response = $this->get(route('admin.restaurants.create'));
         $response->assertRedirect(route('admin.login')); // 未ログインのユーザーがアクセスできないことを確認
     }
 
+    // ログイン済みの一般ユーザーは管理者側の店舗登録ページにアクセスできない
     public function test_logged_in_user_cannot_access_restaurant_create()
     {
         $user = User::factory()->create();
@@ -83,6 +89,7 @@ class RestaurantTest extends TestCase
         $response->assertRedirect(route('admin.login')); // 一般ユーザーがアクセスできないことを確認
     }
 
+    // ログイン済みの管理者は管理者側の店舗登録ページにアクセスできる
     public function test_logged_in_admin_can_access_restaurant_create()
     {
         $admin = new Admin();
@@ -95,6 +102,7 @@ class RestaurantTest extends TestCase
     }
 
     // storeアクションのテスト
+    // 未ログインのユーザーは店舗を登録できない
     public function test_guest_cannot_store_restaurant()
     {
         $restaurant_data = [
@@ -114,6 +122,7 @@ class RestaurantTest extends TestCase
         $response->assertRedirect(route('admin.login')); // 一般ユーザーが登録できないことを確認
     }
 
+    // ログイン済みの一般ユーザーは店舗を登録できない
     public function test_logged_in_user_cannot_store_restaurant()
     {
         $user = User::factory()->create();
@@ -136,6 +145,7 @@ class RestaurantTest extends TestCase
 
     }
 
+    // ログイン済みの管理者は店舗を登録できる
     public function test_logged_in_admin_can_store_restaurant()
     {
         $admin = new Admin();
@@ -162,6 +172,7 @@ class RestaurantTest extends TestCase
     }
 
     // editアクションのテスト
+    // 未ログインのユーザーは管理者側の店舗編集ページにアクセスできない
     public function test_guest_cannot_access_restaurant_edit()
     {
         $restaurant = Restaurant::factory()->create();
@@ -169,6 +180,7 @@ class RestaurantTest extends TestCase
         $response->assertRedirect(route('admin.login')); // 未ログインのユーザーがアクセスできないことを確認
     }
 
+    // ログイン済みの一般ユーザーは管理者側の店舗編集ページにアクセスできない
     public function test_logged_in_user_cannot_access_restaurant_edit()
     {
         $user = User::factory()->create();
@@ -178,6 +190,7 @@ class RestaurantTest extends TestCase
         $response->assertRedirect(route('admin.login')); // 一般ユーザーがアクセスできないことを確認
     }
 
+    // ログイン済みの管理者は管理者側の店舗編集ページにアクセスできる
     public function test_logged_in_admin_can_access_restaurant_edit()
     {
         $admin = new Admin();
@@ -185,14 +198,13 @@ class RestaurantTest extends TestCase
         $admin->password = Hash::make('password');
         $admin->save();
 
-        // $admin = Admin::factory()->create();
-
         $restaurant = Restaurant::factory()->create();
         $response = $this->actingAs($admin, 'admin')->get(route("admin.restaurants.edit", $restaurant));
         $response->assertStatus(200); // 管理者がアクセスできることを確認
     }
 
     // updateアクションのテスト
+     // 未ログインのユーザーは店舗を更新できない
     public function test_guest_cannot_update_restaurant()
     {
         $restaurant_old = Restaurant::factory()->create();
@@ -217,6 +229,7 @@ class RestaurantTest extends TestCase
         $user = User::factory()->create();
 
         $restaurant_old = Restaurant::factory()->create();
+
         $restaurant_new = [
             'name' => '更新テスト',
             'description' => '更新テスト',
@@ -234,6 +247,7 @@ class RestaurantTest extends TestCase
         $response->assertRedirect(route('admin.login')); // 一般ユーザーが更新できないことを確認
     }
 
+    // ログイン済みの管理者は店舗を更新できる
     public function test_logged_in_admin_can_update_restaurant()
     {
         $admin = new Admin();
@@ -242,6 +256,7 @@ class RestaurantTest extends TestCase
         $admin->save();
 
         $restaurant_old = Restaurant::factory()->create();
+
         $restaurant_new = [
             'name' => '更新テスト',
             'description' => '更新テスト',
@@ -260,6 +275,7 @@ class RestaurantTest extends TestCase
     }
 
     // destroyアクションのテスト
+    // 未ログインのユーザーは店舗を削除できない
     public function test_guest_cannot_destroy_restaurant()
     {
         $restaurant = Restaurant::factory()->create();
@@ -269,16 +285,18 @@ class RestaurantTest extends TestCase
         $response->assertRedirect(route('admin.login')); // 未ログインのユーザーが削除できないことを確認
     }
 
+    // ログイン済みの一般ユーザーは店舗を削除できない
     public function test_logged_in_user_cannot_destroy_restaurant()
     {
         $user = User::factory()->create();
 
         $restaurant = Restaurant::factory()->create();
         $response = $this->actingAs($user)->delete(route("admin.restaurants.destroy", $restaurant));
+        this->assertDatabaseHas('restaurants', ['id' => $restaurant->id]);
         $response->assertRedirect(route('admin.login')); // 一般ユーザーが削除できないことを確認
     }
 
-
+    // ログイン済みの管理者は店舗を削除できる
     public function test_logged_in_admin_can_destroy_restaurant()
     {
         $admin = new Admin();
@@ -287,6 +305,7 @@ class RestaurantTest extends TestCase
         $admin->save();
 
         $restaurant = Restaurant::factory()->create();
+        
         $response = $this->actingAs($admin, 'admin')->delete(route("admin.restaurants.destroy", $restaurant));
         //$this->assertDatabaseMissing('restaurants', $restaurant);
         $this->assertDatabaseMissing('restaurants', ['id' => $restaurant->id]);
