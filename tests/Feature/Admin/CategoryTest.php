@@ -50,8 +50,12 @@ class CategoryTest extends TestCase
     public function test_guest_cannot_access_store_category()
     {
         $user = User::factory()->create();
-        $category_data = ['name' => 'test',];
+
+        $category_data = ['name' => 'テスト',];
+
         $response = $this->actingAs($user)->post(route('admin.categories.store'),$category_data);//データ登録するときはpost　更新する時はpatch
+        
+        $this->assertDatabaseMissing('categories', $category_data);
         $response->assertRedirect(route('admin.login')); // 未ログインのユーザーがアクセスできないことを確認
     }
 
@@ -59,29 +63,37 @@ class CategoryTest extends TestCase
     public function test_logged_in_user_cannot_access_store_category()
     {
         $user = User::factory()->create();
-        $response = $this->actingAs($user)->get(route('admin.categories.store'));
+
+        $category_data = ['name' => 'テスト',];
+
+        $response = $this->actingAs($user)->get(route('admin.categories.store'), $category_data);
+        $this->assertDatabaseMissing('categories', $category_data);
         $response->assertRedirect(route('admin.login')); // 一般ユーザーがアクセスできないことを確認
     }
 
-    //ログイン済みの管理者はカテゴリを登録できる
-    public function test_logged_in_admin_can_access_store_category()
+    // ログイン済みの管理者はカテゴリを登録できる
+    public function test_admin_can_access_admin_categories_store()
     {
         $admin = new Admin();
         $admin->email = 'admin@example.com';
-        $admin->password = Hash::make('password');
+        $admin->password = Hash::make('nagoyameshi');
         $admin->save();
-        
-        $response = $this->actingAs($admin, 'admin')->get(route('admin.categories.store'));
-        $response->assertStatus(200); // 管理者がアクセスできることを確認
+
+        $category_data = [
+            'name' => 'テスト',
+        ];
+
+        $response = $this->actingAs($admin, 'admin')->post(route('admin.categories.store'), $category_data);
+
+        $this->assertDatabaseHas('categories', $category_data);
+        $response->assertRedirect(route('admin.categories.index'));
     }
-
-
-
 // updateアクションのテスト
     //未ログインのユーザーはカテゴリを更新できない
     public function test_guest_cannot_update_category()
     {
         $category_old = Category::factory()->create();
+
         $category_new = [
             'name' => '更新テスト',
         ]; 
@@ -123,15 +135,16 @@ class CategoryTest extends TestCase
         $response->assertRedirect(route('admin.categories.index'));  //更新後のリダイレクト先,ここをコントローラーと同じになるよう変更
     }
 
-
 // destroyアクションのテスト
     //未ログインのユーザーはカテゴリを削除できない
     public function test_guest_cannot_destroy_category()
     {
+        $user = User::factory()->create();
         $category = Category::factory()->create();
-        $response = $this->delete(route("admin.categories.destroy", $category));
-        //$this->assertDatabaseHas('categories', $category);
+
+        $response = $this->actingAs($user)->delete(route('admin.categories.destroy', $category));
         $this->assertDatabaseHas('categories', ['id' => $category->id]);
+        $response = $this->delete(route("admin.categories.destroy", $category));
         $response->assertRedirect(route('admin.login')); // 未ログインのユーザーが削除できないことを確認
     }
 

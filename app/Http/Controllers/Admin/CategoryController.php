@@ -11,12 +11,13 @@ class CategoryController extends Controller
     // カテゴリ一覧ページ
     public function index(Request $request)
     {
-        $keyword = $request->input('keyword');//検索してる
+        $keyword = $request->input('keyword');// 検索ボックスに入力されたキーワードを取得する
 
+        // キーワードが存在すれば検索を行い、そうでなければ全件取得する
         if ($keyword) {
-            $categories = Category::where('name', 'like', "%{$keyword}%")->paginate(10);
+            $categories = Category::where('name', 'like', "%{$keyword}%")->paginate(15);
         } else {
-            $categories = Category::paginate(10);
+            $categories = Category::paginate(15);
         }
 
         $total = $categories->total();
