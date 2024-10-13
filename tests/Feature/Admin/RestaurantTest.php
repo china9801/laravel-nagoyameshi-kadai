@@ -118,9 +118,29 @@ class RestaurantTest extends TestCase
         ];
 
         $response = $this->post(route('admin.restaurants.store', $restaurant_data));
+
         $this->assertDatabaseMissing('restaurants', $restaurant_data);
         $response->assertRedirect(route('admin.login')); // 一般ユーザーが登録できないことを確認
     }
+
+    public function test_general_user_cannot_store_restaurant()
+{
+    // 一般ユーザーとしてログイン
+    $this->actingAs($this->generalUser);
+
+    $restaurant_data = [
+        'name' => 'Unauthorized Restaurant',
+        'category_ids' => $this->categories->pluck('id')->toArray(),
+    ];
+
+    // 店舗を登録しようとする
+    $response = $this->post(route('restaurant.store'), $restaurant_data);
+
+    // ステータスコードが403であることを検証
+    $response->assertStatus(403);
+}
+
+
 
     // ログイン済みの一般ユーザーは店舗を登録できない
     public function test_logged_in_user_cannot_store_restaurant()
@@ -153,6 +173,9 @@ class RestaurantTest extends TestCase
         $admin->password = Hash::make('password');
         $admin->save();
 
+        $categories = Category::factory()->count(3)->create();
+        $categoryIds = $categories->pluck('id')->toArray();
+
         $restaurant_data = [
             'name' => 'テスト',
             'description' => 'テスト',
@@ -167,7 +190,16 @@ class RestaurantTest extends TestCase
 
         $response = $this->actingAs($admin, 'admin')->post(route('admin.restaurants.store', $restaurant_data));
 
-        $this->assertDatabaseHas('restaurants', $restaurant_data); // データベースに登録されていることを確認
+
+        unset($restaurantData['category_ids']);
+        $this->assertDatabaseHas('restaurants', $restaurantData);// データベースに登録されていることを確認
+
+        foreach ($categoryIds as $categoryId) {
+        $this->assertDatabaseHas('category_restaurant', [
+            'category_id' => $categoryId,
+        ]);
+        }
+        
         $response->assertRedirect(route('admin.restaurants.index')); // 登録後のリダイレクト先を確認
     }
 
@@ -312,5 +344,33 @@ class RestaurantTest extends TestCase
         $this->assertDatabaseMissing('restaurants', ['id' => $restaurant->id]);
         $response->assertRedirect(route('admin.restaurants.index')); // 更新後のリダイレクト先を確認
     }
+
+    //ログイン済みの一般ユーザーは店舗を登録できない
+    public function test_user_cannot_setting_admin_restaurants(){
+    $user = User::factory()->create();
+
+    $categories = Category::factory()->count(3)->create();
+    $categoryIds = $categories->pluck('id')->toArray();
+
+    $restaurantData = [
+        'name' => 'テスト',
+        'description' => 'テスト',
+        'lowest_price' => 1000,
+        'highest_price' => 5000,
+        'postal_code' => '0000000',
+        'address' => 'テスト',
+        'opening_time' => '10:00:00',
+        'closing_time' => '20:00:00',
+        'seating_capacity' => 50,
+        'category_ids' => $categoryIds
+    ];
+
+    $response = $this->actingAs($user)->post(route('admin.restaurants.store'), $restaurantData);
+    
+    unset($restaurantData['category_ids']);
+    $this->assertDatabaseMissing('restaurants', $restaurantData);
+    $response->assertRedirect(route('admin.login'));
+}
+
 
 }

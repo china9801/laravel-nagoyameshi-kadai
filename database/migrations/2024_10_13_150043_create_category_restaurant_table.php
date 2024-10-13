@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('category_restaurant', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('restaurant_id')->constrained()->cascadeOnDelete();//外部キー制約（constrained()）、参照先のデータが削除されると参照元のデータも同時に削除（cascadeOnDelete()）
-            $table->foreignId('category_id')->constrained()->cascadeOnDelete();//cascade＝「階段のように連なる滝」のこと。1つのデータが削除されると連続して他のデータも削除されるイメージ
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('category_restaurant')) {
+            Schema::create('category_restaurant', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('restaurant_id')->constrained()->cascadeOnDelete();
+                $table->foreignId('category_id')->constrained()->cascadeOnDelete();
+                $table->timestamps();
+            });
+        }
     }
 
     /**
