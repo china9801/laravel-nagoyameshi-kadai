@@ -30,13 +30,15 @@ class RestaurantController extends Controller
         $total = $restaurants->total();
 
         return view('admin.restaurants.index', compact('restaurants', 'keyword', 'total'));
+
     }
 
     public function create() {
-        return view('admin.restaurants.create');
+        $categories = Category::all();
+        return view('admin.restaurants.create',compact('categories'));
     }
 
-    public function store(Request $request) {
+    public function store(Request $request) { // storeアクションは登録時
         $request->validate([
             'name' => 'required',
             'image' => 'image|max:2048',
@@ -68,6 +70,9 @@ class RestaurantController extends Controller
         $restaurant->seating_capacity = $request->input('seating_capacity');
         $restaurant->save();
 
+        $category_ids = array_filter($request->input('category_ids'));
+        $restaurant->categories()->sync($category_ids);
+
         return redirect()->route('admin.restaurants.index')->with('flash_message', '店舗を登録しました。');
     }
 
@@ -75,8 +80,13 @@ class RestaurantController extends Controller
         return view('admin.restaurants.show', compact('restaurant'));
     }
 
-    public function edit(Restaurant $restaurant) {
-        return view('admin.restaurants.edit', compact('restaurant'));
+    public function edit(Restaurant $restaurant) { //editアクションは店舗編集ページ
+        $categories = Category::all();
+        $category_ids = $restaurant->categories->pluck('id')->toArray();
+        //コレクション＝配列やオブジェクトを効率的に操作するための、Laravel独自のラッパークラス（「配列の強化版」という認識でOK）
+        //コレクションに対してpluck()メソッドとtoArray()メソッドをつなげて使うことで、以下のように特定のカラムの値のみを配列化したデータを取得
+
+        return view('admin.restaurants.edit', compact('restaurant','categories','category_ids'));
     }
 
     public function update(Request $request, Restaurant $restaurant) {
@@ -107,6 +117,9 @@ class RestaurantController extends Controller
         $restaurant->closing_time = $request->input('closing_time');
         $restaurant->seating_capacity = $request->input('seating_capacity');
         $restaurant->save();
+
+        $category_ids = array_filter($request->input('category_ids'));
+        $restaurant->categories()->sync($category_ids);
 
         return redirect()->route('admin.restaurants.show', $restaurant)->with('flash_message', '店舗を編集しました。');
     }
