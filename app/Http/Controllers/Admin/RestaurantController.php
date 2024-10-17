@@ -70,7 +70,12 @@ class RestaurantController extends Controller
         $restaurant->seating_capacity = $request->input('seating_capacity');
         $restaurant->save();
 
-        $category_ids = array_filter($request->input('category_ids'));
+        $category_ids = $request->input('category_ids');
+        if (is_null($category_ids)) {
+            $category_ids = [];
+        } else {
+            $category_ids = array_filter($category_ids);
+        }
         $restaurant->categories()->sync($category_ids);
 
         return redirect()->route('admin.restaurants.index')->with('flash_message', '店舗を登録しました。');
