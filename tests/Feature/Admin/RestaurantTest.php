@@ -106,8 +106,6 @@ class RestaurantTest extends TestCase
     // 未ログインのユーザーは店舗を登録できない
     public function test_guest_cannot_store_restaurant()
     {
-        $user = User::factory()->create();
-
         $categories = Category::factory()->count(3)->create(); 
         $category_ids = $categories->pluck('id')->toArray();
 
@@ -200,7 +198,7 @@ class RestaurantTest extends TestCase
         $this->assertDatabaseHas('restaurants', $restaurant_data); // データベースに登録されていることを確認
 
         foreach ($category_ids as $category_id) {
-            $this->assertDatabaseHas('category_restaurant', ['category_id' => $category_id]);
+            $this->assertDatabaseHas('category_restaurant', ['restaurant_id' => $restaurant->id, 'category_id' => $category_id]);
         } 
 
         $response->assertRedirect(route('admin.restaurants.index')); // 登録後のリダイレクト先を確認
@@ -242,10 +240,12 @@ class RestaurantTest extends TestCase
      // 未ログインのユーザーは店舗を更新できない
     public function test_guest_cannot_update_restaurant()
     {
+        $restaurant_old = Restaurant::factory()->create();
+
         $categories = Category::factory()->count(3)->create(); 
         $category_ids = $categories->pluck('id')->toArray(); 
 
-        $restaurant_old = Restaurant::factory()->create();
+    
         $restaurant_new = [
             'name' => '更新テスト',
             'description' => '更新テスト',
@@ -275,10 +275,10 @@ class RestaurantTest extends TestCase
     {
         $user = User::factory()->create();
 
+        $restaurant_old = Restaurant::factory()->create();
+
         $categories = Category::factory()->count(3)->create();
         $category_ids = $categories->pluck('id')->toArray();
-
-        $restaurant_old = Restaurant::factory()->create();
 
         $restaurant_new = [
             'name' => '更新テスト',
@@ -307,9 +307,6 @@ class RestaurantTest extends TestCase
     // ログイン済みの管理者は店舗を更新できる
     public function test_logged_in_admin_can_update_restaurant()
     {
-        $categories = Category::factory()->count(3)->create();
-        $category_ids = $categories->pluck('id')->toArray();
-        
         $admin = new Admin();
         $admin->email = 'admin@example.com';
         $admin->password = Hash::make('password');
@@ -317,6 +314,9 @@ class RestaurantTest extends TestCase
 
         $restaurant_old = Restaurant::factory()->create();
 
+        $categories = Category::factory()->count(3)->create();
+        $category_ids = $categories->pluck('id')->toArray();
+        
         $restaurant_new = [
             'name' => '更新テスト',
             'description' => '更新テスト',
@@ -335,9 +335,11 @@ class RestaurantTest extends TestCase
         unset($restaurant_new['category_ids']); 
         $this->assertDatabaseHas('restaurants', $restaurant_new); // データベースに更新されていることを確認
 
+        $restaurant = Restaurant::latest('id')->first();
+
         foreach ($category_ids as $category_id) {
-            $this->assertDatabaseHas('category_restaurant', ['category_id' => $category_id]);
-        } 
+            $this->assertDatabaseHas('category_restaurant', ['restaurant_id' => $restaurant->id, 'category_id' => $category_id]);
+        }
 
         $response->assertRedirect(route('admin.restaurants.show', $restaurant_old));  //更新後のリダイレクト先,ここをコントローラーと同じになるよう変更
     }

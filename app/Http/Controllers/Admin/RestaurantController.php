@@ -70,12 +70,14 @@ class RestaurantController extends Controller
         $restaurant->seating_capacity = $request->input('seating_capacity');
         $restaurant->save();
 
-        $category_ids = $request->input('category_ids');
+        /*$category_ids = $request->input('category_ids');
         if (is_null($category_ids)) {
             $category_ids = [];
         } else {
             $category_ids = array_filter($category_ids);
         }
+        */
+        $category_ids = array_filter($request->input('category_ids'));
         $restaurant->categories()->sync($category_ids);
 
         return redirect()->route('admin.restaurants.index')->with('flash_message', '店舗を登録しました。');
@@ -87,6 +89,8 @@ class RestaurantController extends Controller
 
     public function edit(Restaurant $restaurant) { //editアクションは店舗編集ページ
         $categories = Category::all();
+        
+        // 設定されたカテゴリのIDを配列化する
         $category_ids = $restaurant->categories->pluck('id')->toArray();
         //コレクション＝配列やオブジェクトを効率的に操作するための、Laravel独自のラッパークラス（「配列の強化版」という認識でOK）
         //コレクションに対してpluck()メソッドとtoArray()メソッドをつなげて使うことで、以下のように特定のカラムの値のみを配列化したデータを取得
