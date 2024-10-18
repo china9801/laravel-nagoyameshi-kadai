@@ -14,6 +14,10 @@ class Restaurant extends Model
         return $this->belongsToMany(Category::class)->withTimestamps();
     }
 
+    public function regular_holiday() {
+        return $this->belongsToMany(Regular_holiday::class)->withTimestamps();
+    }
+
     protected $fillable = [
         'name',
         'description',

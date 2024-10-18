@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use App\Models\Restaurant;
 use App\Models\Category;
+use App\Models\RegularHoliday;
 
 
 
@@ -33,11 +34,16 @@ class RestaurantController extends Controller
 
     }
 
+    //createアクション（店舗登録ページ）
     public function create() {
         $categories = Category::all();
         return view('admin.restaurants.create',compact('categories'));
+
+        $regular_holidays = RegularHoliday::all();
+        return view('admin.restaurants.create',compact('regular_holidays'));
     }
 
+    //storeアクション（店舗登録機能）
     public function store(Request $request) { // storeアクションは登録時
         $request->validate([
             'name' => 'required',
@@ -70,24 +76,22 @@ class RestaurantController extends Controller
         $restaurant->seating_capacity = $request->input('seating_capacity');
         $restaurant->save();
 
-        /*$category_ids = $request->input('category_ids');
-        if (is_null($category_ids)) {
-            $category_ids = [];
-        } else {
-            $category_ids = array_filter($category_ids);
-        }
-        */
         $category_ids = array_filter($request->input('category_ids'));
         $restaurant->categories()->sync($category_ids);
+
+        $regular_holiday_ids = array_filter($request->input('regular_holiday_ids'));
+        $restaurant-regular_holidays()->sync($regular_holiday_ids);
 
         return redirect()->route('admin.restaurants.index')->with('flash_message', '店舗を登録しました。');
     }
 
+    //storeアクション（店舗一覧ページ）
     public function show(Restaurant $restaurant) {
         return view('admin.restaurants.show', compact('restaurant'));
     }
 
-    public function edit(Restaurant $restaurant) { //editアクションは店舗編集ページ
+    //editアクション（店舗編集ページ）
+    public function edit(Restaurant $restaurant) {
         $categories = Category::all();
         
         // 設定されたカテゴリのIDを配列化する
@@ -95,9 +99,12 @@ class RestaurantController extends Controller
         //コレクション＝配列やオブジェクトを効率的に操作するための、Laravel独自のラッパークラス（「配列の強化版」という認識でOK）
         //コレクションに対してpluck()メソッドとtoArray()メソッドをつなげて使うことで、以下のように特定のカラムの値のみを配列化したデータを取得
 
-        return view('admin.restaurants.edit', compact('restaurant','categories','category_ids'));
+        $regular_holidays = RegularHoliday::all();
+
+        return view('admin.restaurants.edit', compact('restaurant','categories','category_ids','regular_holidays'));
     }
 
+    //updateアクション（店舗更新機能）
     public function update(Request $request, Restaurant $restaurant) {
         $request->validate([
             'name' => 'required',
@@ -129,6 +136,9 @@ class RestaurantController extends Controller
 
         $category_ids = array_filter($request->input('category_ids'));
         $restaurant->categories()->sync($category_ids);
+
+        $regular_holiday_ids = array_filter($request->input('regular_holiday_ids'));
+        $restaurant-regular_holidays()->sync($regular_holiday_ids);
 
         return redirect()->route('admin.restaurants.show', $restaurant)->with('flash_message', '店舗を編集しました。');
     }
