@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('regular_holidays');
+        Schema::dropIfExists('regular_holidays');//データの生合成を持ってる
     }
 };

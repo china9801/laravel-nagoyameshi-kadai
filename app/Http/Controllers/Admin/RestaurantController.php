@@ -78,12 +78,12 @@ class RestaurantController extends Controller
         $restaurant->categories()->sync($category_ids);
 
         $regular_holiday_ids = array_filter($request->input('regular_holiday_ids'));
-        $restaurant-regular_holidays()->sync($regular_holiday_ids);
+        $restaurant->regular_holidays()->sync($regular_holiday_ids);
 
         return redirect()->route('admin.restaurants.index')->with('flash_message', '店舗を登録しました。');
     }
 
-    //storeアクション（店舗一覧ページ）
+    //showアクション（店舗一覧ページ）
     public function show(Restaurant $restaurant) {
         return view('admin.restaurants.show', compact('restaurant'));
     }

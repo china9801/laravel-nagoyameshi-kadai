@@ -130,17 +130,17 @@ class RestaurantTest extends TestCase
         $response = $this->post(route('admin.restaurants.store', $restaurant_data));
 
         //カテゴリ機能の確認
-        unset($restaurant_data['category_ids']); 
+        unset($restaurant_data['category_ids'],$restaurant_data['regular_holiday_ids']); 
         $this->assertDatabaseMissing('restaurants', $restaurant_data);
 
         foreach ($category_ids as $category_id) {
             $this->assertDatabaseMissing('category_restaurant', ['category_id' => $category_id]);
         }
 
-        //定休日機能の確認
+        /*定休日機能の確認
         unset($restaurant_data['regular_holiday_ids']); 
         $this->assertDatabaseMissing('restaurants', $restaurant_data);
-
+        */
         foreach ($regular_holiday_ids as $regular_holiday_id) {
             $this->assertDatabaseMissing('regular_holiday_restaurant', ['regular_holiday_id' => $regular_holiday_id]);
         }
@@ -175,7 +175,7 @@ class RestaurantTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('admin.restaurants.store', $restaurant_data));
 
-        unset($restaurant_data['category_ids']); //unset()関数を使って2で追加した要素（category_idsパラメータ）を連想配列（$restaurant_dataまたは$new_restaurant_data）から削除しておく
+        unset($restaurant_data['category_ids'],$restaurant_data['regular_holiday_ids']);  //unset()関数を使って2で追加した要素（category_idsパラメータ）を連想配列（$restaurant_dataまたは$new_restaurant_data）から削除しておく
         $this->assertDatabaseMissing('restaurants', $restaurant_data);
 
         foreach ($category_ids as $category_id) {
@@ -183,9 +183,6 @@ class RestaurantTest extends TestCase
         } //繰り返し処理の中でassertDatabaseHas()メソッドやassertDatabaseMissing()メソッドを使い、category_restaurantテーブルにデータが存在する、または存在しないことを検証する
 
         //定休日機能の確認
-        unset($restaurant_data['regular_holiday_ids']); 
-        $this->assertDatabaseMissing('restaurants', $restaurant_data);
-
         foreach ($regular_holiday_ids as $regular_holiday_id) {
             $this->assertDatabaseMissing('regular_holiday_restaurant', ['regular_holiday_id' => $regular_holiday_id]);
         }
@@ -224,17 +221,17 @@ class RestaurantTest extends TestCase
 
         $response = $this->actingAs($admin, 'admin')->post(route('admin.restaurants.store', $restaurant_data));
 
-        unset($restaurant_data['category_ids']);
+                //カテゴリ機能の確認
+        unset($restaurant_data['category_ids'], $restaurant_data['regular_holiday_ids']);
         $this->assertDatabaseHas('restaurants', $restaurant_data); // データベースに登録されていることを確認
+
+        $restaurant = Restaurant::latest('id')->first();//idの一番先のデータをとりあえず持ってくる
 
         foreach ($category_ids as $category_id) {
             $this->assertDatabaseHas('category_restaurant', ['restaurant_id' => $restaurant->id, 'category_id' => $category_id]);
         } 
 
         //定休日機能の確認
-        unset($restaurant_data['regular_holiday_ids']); 
-        $this->assertDatabaseHas('restaurants', $restaurant_data);
-
         foreach ($regular_holiday_ids as $regular_holiday_id) {
             $this->assertDatabaseHas('regular_holiday_restaurant', ['restaurant_id' => $restaurant->id,'regular_holiday_id' => $regular_holiday_id]);
         }
@@ -302,7 +299,7 @@ class RestaurantTest extends TestCase
         ]; 
         $response = $this->patch(route("admin.restaurants.update", $restaurant_old), $restaurant_new);
 
-        unset($restaurant_new['category_ids']); 
+        unset($restaurant_new['category_ids'],$restaurant_new['regular_holiday_ids']); 
         $this->assertDatabaseMissing('restaurants',$restaurant_new);
 
         foreach ($category_ids as $category_id) {
@@ -310,11 +307,8 @@ class RestaurantTest extends TestCase
         } 
 
         //定休日機能の確認
-        unset($restaurant_data['regular_holiday_ids']); 
-        $this->assertDatabaseMissing('restaurants', $restaurant_new);
-
         foreach ($regular_holiday_ids as $regular_holiday_id) {
-            $this->assertDatabaseMissing('category_restaurant', ['regular_holiday_id' => $regular_holiday_id]);
+            $this->assertDatabaseMissing('regular_holiday_restaurant', ['regular_holiday_id' => $regular_holiday_id]);
         }
 
         $response->assertRedirect(route('admin.login')); // 未ログインのユーザーが更新できないことを確認
@@ -349,7 +343,7 @@ class RestaurantTest extends TestCase
 
         $response = $this->actingAs($user)->patch(route("admin.restaurants.update", $restaurant_old), $restaurant_new);
 
-        unset($restaurant_new['category_ids']); 
+        unset($restaurant_new['category_ids'],$restaurant_new['regular_holiday_ids']); 
         $this->assertDatabaseMissing('restaurants',$restaurant_new);
 
         foreach ($category_ids as $category_id) {
@@ -357,11 +351,8 @@ class RestaurantTest extends TestCase
         } 
 
         //定休日機能の確認
-        unset($restaurant_data['regular_holiday_ids']); 
-        $this->assertDatabaseMissing('restaurants', $restaurant_new);
-
         foreach ($regular_holiday_ids as $regular_holiday_id) {
-            $this->assertDatabaseMissing('category_restaurant', ['regular_holiday_id' => $regular_holiday_id]);
+            $this->assertDatabaseMissing('regular_holiday_restaurant', ['regular_holiday_id' => $regular_holiday_id]);
         }
         $response->assertRedirect(route('admin.login')); // 一般ユーザーが更新できないことを確認
     }
@@ -398,7 +389,7 @@ class RestaurantTest extends TestCase
 
         $response = $this->actingAs($admin, 'admin')->patch(route("admin.restaurants.update", $restaurant_old), $restaurant_new);
 
-        unset($restaurant_new['category_ids']); 
+        unset($restaurant_new['category_ids'],$restaurant_new['regular_holiday_ids']); 
         $this->assertDatabaseHas('restaurants', $restaurant_new); // データベースに更新されていることを確認
 
         $restaurant = Restaurant::latest('id')->first();
@@ -408,11 +399,6 @@ class RestaurantTest extends TestCase
         }
         
         //定休日機能の確認
-        unset($restaurant_data['regular_holiday_ids']); 
-        $this->assertDatabaseHas('restaurants', $restaurant_new);
-
-        $restaurant = Restaurant::latest('id')->first();
-
         foreach ($regular_holiday_ids as $regular_holiday_id) {
             $this->assertDatabaseHas('regular_holiday_restaurant', ['restaurant_id' => $restaurant->id,'regular_holiday_id' => $regular_holiday_id]);
         }
