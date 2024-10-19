@@ -37,10 +37,8 @@ class RestaurantController extends Controller
     //createアクション（店舗登録ページ）
     public function create() {
         $categories = Category::all();
-        return view('admin.restaurants.create',compact('categories'));
-
         $regular_holidays = RegularHoliday::all();
-        return view('admin.restaurants.create',compact('regular_holidays'));
+        return view('admin.restaurants.create',compact('categories','regular_holidays'));
     }
 
     //storeアクション（店舗登録機能）
@@ -138,7 +136,7 @@ class RestaurantController extends Controller
         $restaurant->categories()->sync($category_ids);
 
         $regular_holiday_ids = array_filter($request->input('regular_holiday_ids'));
-        $restaurant-regular_holidays()->sync($regular_holiday_ids);
+        $restaurant->regular_holidays()->sync($regular_holiday_ids);
 
         return redirect()->route('admin.restaurants.show', $restaurant)->with('flash_message', '店舗を編集しました。');
     }

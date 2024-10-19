@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 
+
 class Restaurant extends Model
 {
     use HasFactory;
@@ -14,8 +15,8 @@ class Restaurant extends Model
         return $this->belongsToMany(Category::class)->withTimestamps();
     }
 
-    public function regular_holiday() {
-        return $this->belongsToMany(Regular_holiday::class)->withTimestamps();
+    public function regular_holidays() {
+        return $this->belongsToMany(RegularHoliday::class)->withTimestamps();
     }
 
     protected $fillable = [

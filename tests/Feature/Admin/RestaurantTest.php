@@ -142,7 +142,7 @@ class RestaurantTest extends TestCase
         $this->assertDatabaseMissing('restaurants', $restaurant_data);
 
         foreach ($regular_holiday_ids as $regular_holiday_id) {
-            $this->assertDatabaseMissing('category_restaurant', ['regular_holiday_id' => $regular_holiday_id]);
+            $this->assertDatabaseMissing('regular_holiday_restaurant', ['regular_holiday_id' => $regular_holiday_id]);
         }
 
         $response->assertRedirect(route('admin.login')); // 一般ユーザーが登録できないことを確認
@@ -187,7 +187,7 @@ class RestaurantTest extends TestCase
         $this->assertDatabaseMissing('restaurants', $restaurant_data);
 
         foreach ($regular_holiday_ids as $regular_holiday_id) {
-            $this->assertDatabaseMissing('category_restaurant', ['regular_holiday_id' => $regular_holiday_id]);
+            $this->assertDatabaseMissing('regular_holiday_restaurant', ['regular_holiday_id' => $regular_holiday_id]);
         }
 
         $response->assertRedirect(route('admin.login')); // 一般ユーザーが登録できないことを確認
