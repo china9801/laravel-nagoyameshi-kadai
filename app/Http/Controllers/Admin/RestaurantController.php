@@ -138,6 +138,8 @@ class RestaurantController extends Controller
         $regular_holiday_ids = array_filter($request->input('regular_holiday_ids')?? []);
         $restaurant->regular_holidays()->sync($regular_holiday_ids);
 
+        //接続の確認
+
         return redirect()->route('admin.restaurants.show', $restaurant)->with('flash_message', '店舗を編集しました。');
     }
 
