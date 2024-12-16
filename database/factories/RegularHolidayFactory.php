@@ -18,7 +18,7 @@ class RegularHolidayFactory extends Factory
     public function definition(): array
     {
         return [
-            'day' => $this->faker->dayOfWeek(), // ランダムな曜日を生成
+            'day' => fake()->dayOfWeek(), // ランダムな曜日を生成
         ];
     }
 }
